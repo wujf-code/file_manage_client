@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <!-- Import style -->
+    <link rel="stylesheet" href="//unpkg.com/element-plus/dist/index.css" />
+    <!-- Import Vue 3 -->
+    <script src="//unpkg.com/vue@3"></script>
+    <!-- Import component library -->
+    <script src="//unpkg.com/element-plus"></script>
+    <script src="//unpkg.com/@element-plus/icons-vue"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+    <div id="app">
+        <div class="container">
+            <el-card shadow="hover" class="card">
+                <template #header>
+                    <div class="card-header">
+                        <span>访uni-cloud云存储文件管理（青春版）</span>
+                    </div>
+                </template>
+                <main id="main">
+                    <section id="action-bar">
+                        <el-select v-model="listMode" placeholder="Select">
+                            <el-option v-for="{value,label,disabled} in modeOptions" :key="value" :label="label"
+                                :value="value" :disabled="disabled" />
+                        </el-select>
+                        <el-button type="primary" style="margin-left:.5rem" disabled>新建文件夹</el-button>
+                        <el-dropdown style="margin-left:.5rem" @command="handleCommand">
+                            <el-button type="primary">
+                                上传到当前目录<el-icon class="el-icon--right">
+                                    <arrow-down />
+                                </el-icon>
+                            </el-button>
+                            <template #dropdown>
+                                <el-dropdown-menu>
+                                    <el-dropdown-item v-for="{command,label,disabled} in uploadOptions"
+                                        :command="command" :disabled="disabled">{{label}}</el-dropdown-item>
+                                </el-dropdown-menu>
+                            </template>
+                        </el-dropdown>
+                        <el-drawer v-model="drawer" title="上传文件" direction="rtl" size="600">
+                            <div v-if="!uploadList.length" class="drag-area" @dragenter.prevent="ondragenter"
+                                @dragover.prevent="ondragover" @drop.prevent="ondrop($event)">
+                                <el-icon class="upload-icon" color="#c0c4cc" :size="100">
+                                    <upload-filled />
+                                </el-icon>
+                                <p style="color:rgb(52, 52, 182)">将文件拖到此处，或点击选择文件</p>
+                                <p>可以选择多个文件，不支持上传文件夹</p>
+                            </div>
+                            <div v-else>
+                                <el-descriptions :column="4">
+                                    <el-descriptions-item label="上传任务:">{{uploadList.filter(val=>val.status !==
+                                        'pending').length}}/{{uploadList.length}}</el-descriptions-item>
+                                    <el-descriptions-item label="成功:" class-name="description-success"
+                                        label-class-name="description-success">
+                                        {{uploadList.filter(val=>val.status === 'success').length}}
+                                    </el-descriptions-item>
+                                    <el-descriptions-item label="失败:" class-name="description-fail"
+                                        label-class-name="description-fail">
+                                        {{uploadList.filter(val=>val.status === 'fail').length}}
+                                    </el-descriptions-item>
+                                    <el-descriptions-item>
+                                        <el-button type="primary">继续上传</el-button>
+                                    </el-descriptions-item>
+                                </el-descriptions>
+                                <el-divider />
+                            </div>
+                            <section id="uploadList">
+                                <template v-for="{status,progress,file} in uploadList">
+                                    <div style="padding:1rem 0;">
+                                        <span>{{file.name}}</span>
+                                        <el-progress :percentage="progress"
+                                            :status="status === 'pending' ? '': status ==='success' ? 'success':'warning' ">
+                                        </el-progress>
+                                        <span>{{file.size}}</span>
+                                    </div>
+                                </template>
+                            </section>
+                        </el-drawer>
+                    </section>
+                    <el-divider></el-divider>
+                    <section id="main-table">
+                        <el-table :data="fileList" border stripe>
+                            <el-table-column type="selection" ></el-table-column>
+                            <el-table-column prop="fileId" label="id" width="60px"></el-table-column>
+                            <el-table-column prop="fileName" label="name"></el-table-column>
+                            <el-table-column label="Operations">
+                                <template #default="scope">
+                                    <el-button size="small" type="primary" 
+                                        @click="handleDownload(scope.$index, scope.row)" disabled>Download</el-button>
+                                    <el-button size="small" type="primary"
+                                        @click="handleDetail(scope.$index, scope.row)" disabled>Detail</el-button>
+                                    <el-button size="small" type="danger"
+                                        @click="handleDelete(scope.$index, scope.row)" disabled>Delete</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </section>
+                </main>
+            </el-card>
+        </div>
+    </div>
+</body>
+<script src="index.js"></script>
+
+</html>
