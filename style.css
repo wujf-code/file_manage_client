@@ -40,6 +40,7 @@ html {
     text-align: center;
     border: 1px dashed #409eff;
     border-radius: 10px;
+    cursor: pointer;
 }
 .drag-area > p {
    margin: 0;
@@ -60,4 +61,9 @@ html {
 }
 #main-table {
     margin:1rem;
+}
+.my-pagination {
+    float: right;
+    margin-top: .5rem;
+    margin-right:1rem;
 }

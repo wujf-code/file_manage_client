@@ -48,14 +48,19 @@
                                 </el-dropdown-menu>
                             </template>
                         </el-dropdown>
+                        <input type="file" webkitdirectory id="my-dict" ref="myDict" style="display:none" @change="myDictChange"/>
+                        
                         <el-drawer v-model="drawer" title="上传文件" direction="rtl" size="600">
-                            <div v-if="!uploadList.length" class="drag-area" @dragenter.prevent="ondragenter"
-                                @dragover.prevent="ondragover" @drop.prevent="ondrop($event)">
+                            <label for="my-file">
+                                <div v-if="!uploadList.length" class="drag-area" @dragenter="ondragenter"
+                                @dragover="ondragover" @drop="ondrop">
                                 <el-icon class="upload-icon" color="#c0c4cc" :size="100">
                                     <upload-filled />
                                 </el-icon>
                                 <p style="color:rgb(52, 52, 182)">将文件拖到此处，或点击选择文件</p>
                                 <p>可以选择多个文件，不支持上传文件夹</p>
+                            </label>
+                                <input type="file" id="my-file" style="display:none" @change="myFileChange" />
                             </div>
                             <div v-else>
                                 <el-descriptions :column="4">
@@ -101,10 +106,11 @@
                                     <el-button size="small" type="primary"
                                         @click="handleDetail(scope.$index, scope.row)" disabled>Detail</el-button>
                                     <el-button size="small" type="danger"
-                                        @click="handleDelete(scope.$index, scope.row)" disabled>Delete</el-button>
+                                        @click="handleDelete(scope.$index, scope.row)">Delete</el-button>
                                 </template>
                             </el-table-column>
                         </el-table>
+                        <el-pagination class="my-pagination" layout="prev, pager, next" :total="total" @current-change="currentChange" />
                     </section>
                 </main>
             </el-card>
